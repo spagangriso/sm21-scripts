@@ -6,8 +6,8 @@ import csv
 
 #output record
 currentRecord={
-    'frontier':'', 
     'arxiv': '', 
+    'frontier':'', 
     'also': ''
 }
 
@@ -91,7 +91,8 @@ class paperHTMLParser(HTMLParser):
             return
          
         #check if data might contain the arXiv number, if so assume title came before and finish the record
-        searchResult = re.search('arXiv:(\S+)', data)
+        #searchResult = re.search('arXiv:(\S+)', data)
+        searchResult = re.search('arXiv:(\d+\.\d+)', data)
         if searchResult:
             #found new arXiv reference, store record
             currentRecord['arxiv'] = searchResult.group(1)
@@ -148,6 +149,10 @@ if __name__ == '__main__':
         print('{}: {}'.format(g, occ))
         stat[g] = occ
     print('Total:', sum([stat[g] for g in groups]))
+    with open('stat.csv', 'w') as output_stat:
+        csvWriter = csv.writer(output_stat)
+        for g in groups:
+            csvWriter.writerow([g, stat[g]])
 
     #save to file
     with open(cmdArgs.output_file, 'w') as output_file:
