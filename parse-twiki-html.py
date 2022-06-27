@@ -3,6 +3,7 @@ import argparse
 from os.path import exists
 import re
 import csv
+import pandas as pd
 
 #output record
 currentRecord={
@@ -142,13 +143,30 @@ if __name__ == '__main__':
     #print statistics
     stat={}
     groups = sorted(list(set([rec['frontier'] for rec in outputPapers])))
-    print('Number of papers per frontier:')
+
+    print('Number of papers per group:')
     for g in groups:
         #count occurrences in outputPapers
         occ = len([rec for rec in outputPapers if rec['frontier'] == g])
         print('{}: {}'.format(g, occ))
         stat[g] = occ
     print('Total:', sum([stat[g] for g in groups]))
+
+    papers_df = pd.DataFrame(outputPapers)
+    unique_df = papers_df.groupby(papers_df['arxiv']).aggregate({'arxiv':'first', 'frontier': ','.join})
+    if (cmdArgs.debug > 2):
+        print(unique_df.head())
+
+    print('Number of papers per frontier:')
+    tot = 0
+    for f in ['AF', 'CEF', 'CF', 'COMPF','EF', 'IF', 'NF', 'RF','TF','UF']:
+        n = len(unique_df[unique_df['frontier'].str.contains(f)])
+        tot = tot + n
+        print('- {frontier}: {number:d}'.format(frontier=f, number=n))
+    print('Total papers: {}'.format(tot))
+    total_unique = len(unique_df)
+    print('Total UNIQUE papers: {}'.format(total_unique))
+
     with open('stat.csv', 'w') as output_stat:
         csvWriter = csv.writer(output_stat)
         for g in groups:
