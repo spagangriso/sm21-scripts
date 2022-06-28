@@ -1,5 +1,4 @@
 from distutils.log import error
-import requests
 import csv
 import argparse
 import pandas as pd
@@ -10,14 +9,14 @@ if __name__ == '__main__':
 
     cmdParser = argparse.ArgumentParser(description='Parse CSV file from google drive and output unique entries')
     cmdParser.add_argument('input_files', metavar='inputFile', type=str, nargs='+', help='Input CSV file(s)')
-    cmdParser.add_argument('--output_file', dest='output_file', type=str, default='sm21-lbl-papers-metadata.csv', help='Output CSV file')
+    cmdParser.add_argument('--output_file', dest='output_file', type=str, default='sm21-lbl-unique-papers-metadata.csv', help='Output CSV file')
     cmdParser.add_argument('--debug', dest='debug', type=int, default=1, help='Enable debug printout. Set to 0 for no un-necessary printout')
     cmdArgs = cmdParser.parse_args()
 
     #load data in a dataframe
     if cmdArgs.debug > 0:
         print('Loading input files: ', cmdArgs.input_files)
-    papers = pd.concat(pd.read_csv(f, dtype={'arxiv': str, 'frontier': str, 'also': str}) for f in cmdArgs.input_files)
+    papers = pd.concat(pd.read_csv(f, dtype={'arxiv': str, 'frontier': str, 'title': str, 'LBL direct role?': str, 'lbl_authors': str, 'lbl_inst': str}) for f in cmdArgs.input_files)
 
     #now make unique (in arxiv number) rows and make an "OR" of the 'LBL direct role?' column
     paper_merge = {'arxiv': 'first', 'frontier': ','.join, 'title':'first', 'LBL direct role?': 'any','lbl_authors': 'first', 'lbl_inst': 'first'}
