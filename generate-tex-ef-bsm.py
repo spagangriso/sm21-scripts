@@ -8,6 +8,12 @@ import re
 import ast
 
 
+def safe_tex_inst(inst):
+    #just change numbers to letters
+    replacements = {'0': 'A', '1': 'B', '2': 'C', '3': 'D', '4': 'E', '5': 'F', '6': 'G', '7': 'H', '8': 'I', '9': 'L'}
+    for k in replacements:
+        inst = str(inst).replace(k, replacements[k])
+    return inst
 
 if __name__ == '__main__':
 
@@ -34,7 +40,7 @@ if __name__ == '__main__':
     out_tex.write("\n\n\n %%List of institutions\n\n")
     #Now generate institution commands, based on their code.
     for idx_inst, inst in institutions.iterrows():
-        out_tex.write('\\newcommand{{\\inst{0}}}{{\\Affil{{{1}}}}}\n'.format(inst['code'], inst['name']))
+        out_tex.write('\\newcommand{{\\inst{0}}}{{\\Affil{{{1}}}}}\n'.format(safe_tex_inst(inst['code']), inst['name']))
 
     out_tex.write("\n\n\n %%List of authors\n\n")
 
@@ -42,7 +48,7 @@ if __name__ == '__main__':
         auth['institutions'] = ast.literal_eval(auth['institutions'])
         out_tex.write('\\author{{{0}}}'.format(auth['full_name']))
         for inst in auth['institutions']:
-            out_tex.write('\\inst{0}'.format(inst['code']))        
+            out_tex.write('\\inst{0}'.format(safe_tex_inst(inst['code'])))        
         out_tex.write('\n')
 
     print(additional_authors.tail())
@@ -50,9 +56,9 @@ if __name__ == '__main__':
     for idx_auth, auth in additional_authors.iterrows():
         out_tex.write('\\author{{{0}}}'.format(auth['full_name']))
         if (auth['simple_affiliation_1']):
-            out_tex.write('\\inst{0}'.format(auth['simple_affiliation_1']))
+            out_tex.write('\\inst{0}'.format(safe_tex_inst(auth['simple_affiliation_1'])))
         if (str(auth['simple_affiliation_2']) and str(auth['simple_affiliation_2']) != 'nan'):
-            out_tex.write('\\inst{0}'.format(auth['simple_affiliation_2']))
+            out_tex.write('\\inst{0}'.format(safe_tex_inst(auth['simple_affiliation_2'])))
         out_tex.write('\n')
 
     out_tex.close()
