@@ -14,7 +14,7 @@ inst_LBL_str = ['LBNL', 'LBL', 'Lawrence Berkeley']
 
 if __name__ == '__main__':
 
-    cmdParser = argparse.ArgumentParser(description='Parse CVS files and gather metadata')
+    cmdParser = argparse.ArgumentParser(description='Parse CVS files and gather metadata. Filter entries with authors from LBL.')
     cmdParser.add_argument('input_files', metavar='inputFile', type=str, nargs='+', help='Input CSV file(s)')
     cmdParser.add_argument('--output_file', dest='output_file', type=str, default='sm21-lbl-papers-metadata.csv', help='Output CSV file with metadata')
     cmdParser.add_argument('--debug', dest='debug', type=int, default=1, help='Enable debug printout. Set to 0 for no un-necessary printout')
